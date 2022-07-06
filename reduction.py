@@ -35,13 +35,13 @@ class Segment:
         return self.max - self.min + 1
 
 
-def get_longest_valid_chain(segments, chain_start, chian_stop, maximum_percent_contamination, min_segment_score):
-    #print ('get_longest_valid_chain', chain_start, chian_stop)
+def get_longest_valid_chain(segments, chain_start, chain_stop, maximum_percent_contamination, min_segment_score):
+    #print ('get_longest_valid_chain', chain_start, chain_stop)
 
-    if chain_start == -1 or chian_stop == -1:
+    if chain_start == -1 or chain_stop == -1:
         return (-1, 0)
 
-    length = chian_stop - chain_start + 1
+    length = chain_stop - chain_start + 1
     good_lengths_sat = []
     bad_lengths_sat  = []
     scores_sat = []
@@ -67,7 +67,7 @@ def get_longest_valid_chain(segments, chain_start, chian_stop, maximum_percent_c
     #print ('good_lenghts', good_lengths_sat)
     #print ('bad_lenghts', bad_lengths_sat)
 
-    for i in range(chian_stop, chain_start - 1, -1):
+    for i in range(chain_stop, chain_start - 1, -1):
         if segments[i].type != SType.GOOD:
             continue
         percent_contamination = float(bad_lengths_sat[i - chain_start]) / float(bad_lengths_sat[i - chain_start] + good_lengths_sat[i - chain_start])
@@ -143,7 +143,7 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
 #            return
 
     chain_start = -1
-    chian_stop = -1
+    chain_stop = -1
     total_ambiguous = 0
     total_bad = 0
     ind = 0
@@ -155,7 +155,7 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
         if chain_start == -1:
             if segments[ind].type == SType.GOOD:
                 chain_start = ind
-                chian_stop = ind
+                chain_stop = ind
                 total_ambiguous = 0
                 total_bad = 0                                
         else:
@@ -169,16 +169,16 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
                 if total_bad > max_bad_points:
                     stop_forward = True
             else:
-                chian_stop = ind
+                chain_stop = ind
 
             if stop_forward:
-                chain_end, score = get_longest_valid_chain(segments, chain_start, chian_stop, maximum_percent_contamination, min_segment_score)
+                chain_end, score = get_longest_valid_chain(segments, chain_start, chain_stop, maximum_percent_contamination, min_segment_score)
                 result.append({"min":chain_start, "max":chain_end, "score" : score})
                 ind = chain_end
                 chain_start = -1
         ind += 1
 
-    chain_end, score = get_longest_valid_chain(segments, chain_start, chian_stop, maximum_percent_contamination, min_segment_score)
+    chain_end, score = get_longest_valid_chain(segments, chain_start, chain_stop, maximum_percent_contamination, min_segment_score)
     if chain_end != -1:        
         result.append({"min":chain_start, "max":chain_end, "score" : score})
 
