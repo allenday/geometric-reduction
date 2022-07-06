@@ -173,14 +173,14 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
 
             if stop_forward:
                 chain_end, score = get_longest_valid_chain(segments, chain_start, chain_stop, maximum_percent_contamination, min_segment_score)
-                result.append({"min":chain_start, "max":chain_end, "score" : score})
+                result.append({"min":segments[chain_start].min, "max":segments[chain_end].min, "label":segments[chain_start].label, "score":score})
                 ind = chain_end
                 chain_start = -1
         ind += 1
 
     chain_end, score = get_longest_valid_chain(segments, chain_start, chain_stop, maximum_percent_contamination, min_segment_score)
     if chain_end != -1:        
-        result.append({"min":chain_start, "max":chain_end, "score" : score})
+        result.append({"min":segments[chain_start].min, "max":segments[chain_end].min, "label":segments[chain_start].label, "score":score})
 
     print ('result:')
     print (result)
