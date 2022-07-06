@@ -1,0 +1,8 @@
+[
+
+{"min": 1, "max": 1, "label": "A", "score": 0.8},
+{"min": 2, "max": 2, "label": "A", "score": 0.7},
+{"min": 3, "max": 3, "label": "B", "score": 1.2},
+{"min": 4, "max": 4, "label": "A", "score": 0.7},
+{"min": 5, "max": 5, "label": "A", "score": 1.2}
+]
