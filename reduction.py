@@ -91,8 +91,8 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
         print(e)
         return 
 
-    total_segemnts = len(data)
-    print ("total_segemnts: ", total_segemnts)
+    total_segments = len(data)
+    print ("total_segments: ", total_segments)
 
     segments = []
 
@@ -117,17 +117,30 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
 
     segments.sort()
 
-    for s in segments:
-        print (s)
+#    for s in segments:
+#        print (s)
 
-    for i in range(1, total_segemnts):
+    enriched_segments = []
+    for i in range(1, total_segments):
+        enriched_segments.append(segments[i - 1])
+        if segments[i - 1].max != segments[i].min - 1:
+            gapseg = Segment(segments[i - 1].max + 1, segments[i].min - 1, 'NA', float(0))
+            gapseg.type = SType.AMBIGUOUS
+            enriched_segments.append(gapseg)
+    enriched_segments.append(segments[total_segments - 1])
+    for s in enriched_segments:
+        print (s)
+    segments = enriched_segments
+    total_segments = len(segments)
+
+    for i in range(1, total_segments):
         if segments[i - 1].max >= segments[i].min:
             print ("Segments {}=[{},{}] and {}=[{},{}] intersects. This is not suppported. Fix input data.".format(i - 1, segments[i - 1].min, segments[i - 1].max, i, segments[i].min, segments[i].max))
             return
 
-        if segments[i - 1].max != segments[i].min - 1:
-            print ("There is a gap between segment {}=[{},{}] and {}=[{},{}] : [{}, {}]. This is not suppported. Fix input data.".format(i - 1, segments[i - 1].min, segments[i - 1].max, i, segments[i].min, segments[i].max, segments[i - 1].max + 1, segments[i].min - 1))
-            return
+#        if segments[i - 1].max != segments[i].min - 1:
+#            print ("There is a gap between segment {}=[{},{}] and {}=[{},{}] : [{}, {}]. This is not suppported. Fix input data.".format(i - 1, segments[i - 1].min, segments[i - 1].max, i, segments[i].min, segments[i].max, segments[i - 1].max + 1, segments[i].min - 1))
+#            return
 
     chain_start = -1
     chian_stop = -1
@@ -137,7 +150,7 @@ def do_job(input_file_path, output_file_path, desired_label, score, max_ambiguou
 
     result = []
 
-    while ind < total_segemnts:
+    while ind < total_segments:
 
         if chain_start == -1:
             if segments[ind].type == SType.GOOD:
